@@ -1,0 +1,10 @@
+version:
+  hs_bindgen: 0.1.0
+  binding_specification: '1.0'
+ctypes:
+- headers: library_b.h
+  cname: struct Driver
+  hsname: Driver
+hstypes:
+- hsname: Driver
+  representation: emptydata
