@@ -1,0 +1,13 @@
+packages: .
+
+source-repository-package
+  type: git
+  location: https://github.com/well-typed/hs-bindgen
+--  tag: release-0.1-alpha 
+  tag: dc6861a5c28b5be00c969d44fcdc540422b9ca3f
+  subdir: c-expr-dsl c-expr-runtime hs-bindgen hs-bindgen-runtime
+
+source-repository-package
+  type: git
+  location: https://github.com/well-typed/libclang
+  tag: release-0.1-alpha 

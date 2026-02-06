@@ -1,0 +1,93 @@
+cabal-version: 3.0
+name:          blogpost
+version:       0.1.0
+license:       BSD-3-Clause
+license-file:  LICENSE
+author:        Edsko de Vries
+maintainer:    edsko@well-typed.com
+build-type:    Simple
+
+common lang
+  default-language: GHC2021
+  build-depends:    base >= 4.18 && < 5
+
+  ghc-options:
+      -Wall
+      -Wunused-packages
+      -Wredundant-constraints
+
+  default-extensions:
+      OverloadedRecordDot
+
+library libraryA
+  import:         lang
+  hs-source-dirs: generated/A
+
+  exposed-modules:
+    LibraryA
+    LibraryA.Safe
+    LibraryA.Unsafe
+    LibraryA.FunPtr
+
+  -- dependencies required by the generated code
+  -- (note that this library /only/ contains generated code)
+  --
+  -- TODO <https://github.com/well-typed/hs-bindgen/issues/1627>
+  -- We will change this for release 0.1 so that only the runtime is needed.
+  build-depends:
+    , hs-bindgen-runtime
+
+  include-dirs: cbits
+  cc-options:   -Wall
+  c-sources:    cbits/library_a.c
+
+library libraryB
+  import:         lang
+  hs-source-dirs: generated/B
+
+  exposed-modules:
+    LibraryB
+    LibraryB.Safe
+    LibraryB.Unsafe
+    LibraryB.FunPtr
+
+  build-depends:
+    , c-expr-runtime
+    , hs-bindgen-runtime
+    , libraryA
+    , primitive
+
+  include-dirs: cbits
+  cc-options:   -Wall
+  c-sources:    cbits/library_b.c
+
+library libraryA-TH
+  import:         lang
+  hs-source-dirs: src/A
+
+  exposed-modules:
+    LibraryA_TH
+
+  build-depends:
+    , hs-bindgen
+    , optics
+
+  include-dirs: cbits
+
+executable hasfield-demo
+  import:             lang
+  main-is:            Main.hs
+  hs-source-dirs:     app
+  build-tool-depends: hs-bindgen:hs-bindgen-cli
+
+  ghc-options:
+      -- TODO <https://github.com/well-typed/hs-bindgen/issues/1641>
+      -- We cannot enable -Wprepositive-qualified-module globally currently.
+      -Wprepositive-qualified-module
+
+  build-depends:
+    , hs-bindgen-runtime
+    , libraryA
+    , libraryA-TH
+    , libraryB
+    , optics
